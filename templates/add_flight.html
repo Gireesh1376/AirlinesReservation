@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Add New Flight</h2>
+
+<form action="{{ url_for('app_views.add_flight') }}" method="POST" style="text-align:center;">
+  
+  <label>Flight No:</label><br>
+  <input type="text" name="flight_no" required><br><br>
+
+  <label>Airline:</label><br>
+  <select name="airline" required class="form-select">
+      <option>Air India</option>
+      <option>IndiGo</option>
+      <option>Vistara</option>
+      <option>Emirates</option>
+      <option>Qatar Airways</option>
+      <option>Singapore Airlines</option>
+      <option>Etihad Airways</option>
+      <option>Lufthansa</option>
+      <option>British Airways</option>
+  </select>
+  <br><br>
+
+  <label>Source:</label><br>
+  <input type="text" name="source" required><br><br>
+
+  <label>Destination:</label><br>
+  <input type="text" name="destination" required><br><br>
+
+  <label>Departure Time:</label><br>
+  <input type="text" name="departure_time" required><br><br>
+
+  <label>Arrival Time:</label><br>
+  <input type="text" name="arrival_time" required><br><br>
+
+  <label>Date (YYYY-MM-DD):</label><br>
+  <input type="date" name="date" required><br><br>
+
+  <label>Seats Available:</label><br>
+  <input type="number" name="seats_available" min="1" required><br><br>
+
+  <label>Price (₹):</label><br>
+  <input type="number" name="price" min="1000" step="100" required><br><br>
+
+  <button type="submit" class="btn btn-success">Add Flight</button>
+</form>
+
+{% endblock %}

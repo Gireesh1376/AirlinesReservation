@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-center mb-4">Passengers for Flight {{ flight.flight_no }}</h2>
+
+{% if passengers %}
+<table class="table table-bordered table-striped text-center">
+  <thead>
+    <tr>
+      <th>Booking ID</th>
+      <th>Passenger Name</th>
+      <th>Email</th>
+      <th>Flight</th>
+      <th>Date</th>
+      <th>Departure</th>
+      <th>Arrival</th>
+      <th>Seat</th>
+      <th>Class</th>
+      <th>Price (₹)</th>
+      <th>Ticket</th>
+      <th>Cancel</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for booking, user in passengers %}
+    <tr>
+      <td>{{ booking.id }}</td>
+      <td>{{ user.name }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ flight.flight_no }}</td>
+      <td>{{ flight.date }}</td>
+      <td>{{ flight.departure_time }}</td>
+      <td>{{ flight.arrival_time }}</td>
+      <td>{{ booking.seat_number }}</td>
+      <td>{{ booking.seat_class }}</td>
+      <td>{{ booking.final_price }}</td>
+ 
+      <td>
+         <a class="btn btn-sm btn-primary"
+            href="{{ url_for('app_views.download_ticket', booking_id=booking.id) }}">
+            PDF
+         </a>
+      </td>
+
+
+      <!-- CANCEL BUTTON ADDED HERE -->
+      <td>
+        <a class="btn btn-danger btn-sm"
+           href="{{ url_for('app_views.cancel_booking_admin', booking_id=booking.id, flight_id=flight.id) }}">
+           Remove
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+<p class="text-center mt-4">No passengers have booked this flight yet.</p>
+{% endif %}
+
+<a href="{{ url_for('app_views.admin_panel') }}" class="btn btn-secondary mt-3">Back to Admin Panel</a>
+
+{% endblock %}

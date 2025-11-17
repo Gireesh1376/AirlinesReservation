@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Admin Login</h2>
+
+<form action="{{ url_for('app_views.admin_login') }}" method="POST" style="text-align:center;">
+
+  <label>Email:</label><br>
+  <input type="email" name="email" required><br><br>
+
+  <label>Password:</label><br>
+  <input type="password" name="password" required><br><br>
+
+  <button type="submit">Login</button>
+</form>
+
+{% endblock %}

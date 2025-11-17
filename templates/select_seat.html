@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-center mb-4">Choose Your Seat</h2>
+
+<style>
+.seat {
+    width: 48px;
+    height: 48px;
+    margin: 6px;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: transform 0.15s ease-in-out;
+}
+
+.seat:hover {
+    transform: scale(1.12);
+}
+
+/* CABIN COLORS */
+.seat.first { background-color: #0056b3; }      /* First Class - Blue */
+.seat.business { background-color: #c99700; }   /* Business - Gold */
+.seat.economy { background-color: #28a745; }    /* Economy - Green */
+
+.seat.booked { background-color: #dc3545 !important; cursor: not-allowed; }
+
+/* Tooltips */
+.seat[data-tooltip]:hover:after {
+    content: attr(data-tooltip);
+    position: absolute;
+    background-color: #000;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    top: -35px;
+}
+</style>
+
+<div class="container text-center">
+
+    {% for row in seat_map %}
+        <div class="row justify-content-center mb-2">
+            {% for seat in row %}
+                
+                {% if seat == None %}
+                    <div style="width:25px;"></div>   <!-- AISLE -->
+                {% else %}
+                    <div class="seat {{ seat_colors[seat] }} {% if seat in booked_seats %}booked{% endif %}"
+                         data-seat="{{ seat }}"
+                         data-tooltip="{{ seat_class_map[seat] }}"
+                         onclick="selectSeat(this)">
+                        {{ seat }}
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+</div>
+
+<script>
+function selectSeat(el) {
+    if (el.classList.contains("booked")) return;
+
+    let seat = el.dataset.seat;
+
+    let url = "{{ url_for('app_views.book_flight', flight_id=flight.id, seat='SEAT_HOLDER') }}";
+    url = url.replace('SEAT_HOLDER', seat);
+
+    window.location.href = url;
+}
+</script>
+
+{% endblock %}

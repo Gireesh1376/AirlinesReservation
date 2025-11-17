@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Edit Flight</h2>
+
+<form action="{{ url_for('app_views.edit_flight', flight_id=flight.id) }}" method="POST" style="text-align:center;">
+
+  <label>Flight No:</label><br>
+  <input type="text" name="flight_no" value="{{ flight.flight_no }}" required><br><br>
+
+  <label>Airline:</label><br>
+  <select name="airline" class="form-select">
+    <option selected>{{ flight.airline }}</option>
+    <option>Air India</option>
+    <option>IndiGo</option>
+    <option>Vistara</option>
+    <option>Emirates</option>
+    <option>Qatar Airways</option>
+    <option>Singapore Airlines</option>
+    <option>Etihad Airways</option>
+    <option>Lufthansa</option>
+    <option>British Airways</option>
+  </select>
+  <br><br>
+
+  <label>Source:</label><br>
+  <input type="text" name="source" value="{{ flight.source }}" required><br><br>
+
+  <label>Destination:</label><br>
+  <input type="text" name="destination" value="{{ flight.destination }}" required><br><br>
+
+  <label>Departure Time:</label><br>
+  <input type="text" name="departure_time" value="{{ flight.departure_time }}" required><br><br>
+
+  <label>Arrival Time:</label><br>
+  <input type="text" name="arrival_time" value="{{ flight.arrival_time }}" required><br><br>
+
+  <label>Date:</label><br>
+  <input type="date" name="date" value="{{ flight.date }}" required><br><br>
+
+  <label>Seats Available:</label><br>
+  <input type="number" name="seats_available" value="{{ flight.seats_available }}" required><br><br>
+
+  <label>Price (₹):</label><br>
+  <input type="number" name="price" value="{{ flight.price }}" min="1000" step="100" required><br><br>
+
+  <button class="btn btn-primary" type="submit">Update Flight</button>
+</form>
+
+{% endblock %}

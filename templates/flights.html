@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-center mb-4">Available Flights</h2>
+
+<!-- Search Form -->
+<form action="{{ url_for('app_views.flights_page') }}" method="POST" class="row mb-4">
+
+  <div class="col-md-3">
+    <label>Source</label>
+    <select class="form-select" name="source">
+      <option value="Any">Any</option>
+      {% for s in sources %}
+        <option value="{{ s }}" {% if selected_source == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label>Destination</label>
+    <select class="form-select" name="destination">
+      <option value="Any">Any</option>
+      {% for d in destinations %}
+        <option value="{{ d }}" {% if selected_destination == d %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label>Date</label>
+    <input type="date" class="form-control" name="date" value="{{ selected_date }}">
+  </div>
+
+  <div class="col-md-3 d-flex align-items-end">
+    <button class="btn btn-primary w-100">Search</button>
+  </div>
+
+</form>
+
+{% if flights %}
+<table class="table table-bordered table-striped text-center">
+  <thead>
+    <tr>
+      <th>Flight No</th>
+      <th>Source</th>
+      <th>Destination</th>
+      <th>Date</th>
+      <th>Departure</th>
+      <th>Arrival</th>
+      <th>Price (₹)</th>
+      <th>Seats</th>
+      <th>Book</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for flight in flights %}
+      <tr>
+        <td>{{ flight.flight_no }}</td>
+        <td>{{ flight.source }}</td>
+        <td>{{ flight.destination }}</td>
+        <td>{{ flight.date }}</td>
+        <td>{{ flight.departure_time }}</td>
+        <td>{{ flight.arrival_time }}</td>
+        <td>{{ flight.price }}</td>
+        <td>{{ flight.seats_available }}</td>
+        <td><a class="btn btn-success" href="{{ url_for('app_views.select_seat', flight_id=flight.id) }}">Book</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+<p class="text-center">No flights found.</p>
+{% endif %}
+
+{% endblock %}

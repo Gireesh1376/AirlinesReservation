@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-center mb-4">Payment for Flight {{ flight.flight_no }}</h2>
+
+<form action="{{ url_for('app_views.verify_payment') }}" method="POST" class="text-center">
+
+    <input type="hidden" name="flight_id" value="{{ flight.id }}">
+    <input type="hidden" name="name" value="{{ name }}">
+    <input type="hidden" name="email" value="{{ email }}">
+    <input type="hidden" name="seat_class" value="{{ seat_class }}">
+    <input type="hidden" name="seat_number" value="{{ seat_number }}">
+    <input type="hidden" name="final_price" value="{{ final_price }}">
+
+    <label>Card Number:</label><br>
+    <input type="text" name="card_no" maxlength="16" required><br><br>
+
+    <label>Name on Card:</label><br>
+    <input type="text" name="card_name" required><br><br>
+
+    <label>Expiry:</label><br>
+    <input type="month" name="expiry" required><br><br>
+
+    <label>CVV:</label><br>
+    <input type="password" name="cvv" maxlength="3" required><br><br>
+
+    <button type="submit" class="btn btn-primary">Pay ₹{{ final_price }}</button>
+
+</form>
+
+{% endblock %}

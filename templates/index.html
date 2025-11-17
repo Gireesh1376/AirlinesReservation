@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Available Flights</h2>
+
+{% if flights %}
+<table border="1" align="center" cellpadding="8" style="border-collapse: collapse;">
+  <tr style="background-color:#004080; color:white;">
+    <th>Flight No</th>
+    <th>Source</th>
+    <th>Destination</th>
+    <th>Departure</th>
+    <th>Arrival</th>
+    <th>Seats Available</th>
+    <th>Action</th>
+  </tr>
+
+  {% for flight in flights %}
+  <tr>
+    <td>{{ flight.flight_no }}</td>
+    <td>{{ flight.source }}</td>
+    <td>{{ flight.destination }}</td>
+    <td>{{ flight.departure_time }}</td>
+    <td>{{ flight.arrival_time }}</td>
+    <td>{{ flight.seats_available }}</td>
+    <td>
+      {% if flight.seats_available > 0 %}
+      <a href="{{ url_for('app_views.book_flight', flight_id=flight.id) }}">Book</a>
+      {% else %}
+      <span style="color: red;">Full</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No flights available currently.</p>
+{% endif %}
+{% endblock %}

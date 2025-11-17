@@ -1,0 +1,597 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- AOS for animations (already included earlier in previous variants) -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+/* FIXED smooth scrolling airline logos */
+.logo-strip-fixed {
+  width: 100%;
+  overflow: hidden;
+  padding: 15px 0;
+  background: linear-gradient(180deg, rgba(250,250,255,0.7), var(--bg));
+}
+
+.logo-track {
+  display: flex;
+  width: calc(250px * 12); /* 12 images */
+  animation: scroll-left 22s linear infinite;
+}
+
+.logo-track img {
+  height: 40px;
+  max-height: 40px;
+  width: auto;
+  object-fit: contain;
+  margin: 0 30px;
+  filter: brightness(1) contrast(1.1);
+  transition: transform .3s ease, opacity .3s ease;
+}
+
+.logo-card {
+  background: white;
+  padding: 6px 14px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 55px;
+  width: 130px;
+}
+.logo-card img {
+  max-height: 38px;
+  width: auto;
+}
+
+
+.logo-track img:hover {
+  transform: scale(1.12);
+  opacity: 1;
+}
+
+/* Animation */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+
+/* ---------- Theme variables (light/dark) ---------- */
+:root{
+  --bg:#f2f6ff;
+  --card:#ffffff;
+  --muted:#6c757d;
+  --accent:#003366;
+  --primary:#0d6efd;
+  --text:#111827;
+}
+
+body.dark {
+  --bg:#0f1724;
+  --card:#0b1220;
+  --muted:#9aa4b2;
+  --accent:#a5d8ff;
+  --primary:#3b82f6;
+  --text:#e6eefb;
+}
+
+body { background:var(--bg); color:var(--text); transition:background .25s, color .25s; }
+
+/* ---------- Hero ---------- */
+.hero {
+  background-image: url('https://images.unsplash.com/photo-1529074963764-98f45c47344b');
+  background-size: cover;
+  background-position: center;
+  height: 80vh;
+  position: relative;
+  border-bottom: 6px solid rgba(0,0,0,0.05);
+}
+.hero-overlay { position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,50,0.45), rgba(0,0,0,0.22)); }
+.hero-content { position:relative; z-index:10; text-align:center; top:30%; color:white; }
+.hero h1{ font-size:48px; font-weight:800; letter-spacing:0.2px; }
+.hero p{ font-size:18px; margin-bottom:18px; }
+
+/* Search box */
+.search-box {
+  max-width:920px; margin:auto;
+  background:var(--card); padding:18px; border-radius:12px;
+  box-shadow:0 14px 30px rgba(2,6,23,0.12);
+}
+
+
+/* -------------------------------------------
+   WHY CHOOSE US
+--------------------------------------------*/
+.section-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin-top: 55px;
+    text-align: center;
+}
+
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.feature-card {
+    width: 250px;
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+}
+
+
+/* ---------- Logo strip ---------- */
+.logo-strip {
+  padding:22px 0; background: linear-gradient(180deg, rgba(250,250,255,0.7), var(--bg));
+  overflow:hidden;
+}
+.logo-strip img{ height:44px; margin:0 28px; opacity:.85; transition: all .25s; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06)); }
+.logo-strip img:hover{ transform: translateY(-6px); opacity:1; }
+
+/* ---------- Stats ---------- */
+.stats-box{ background:var(--card); padding:20px; border-radius:10px; box-shadow:0 10px 24px rgba(2,6,23,0.08); text-align:center; }
+.stats-box h2{ font-size:28px; color:var(--accent); margin-bottom:6px; }
+.stats-box p{ color:var(--muted); margin:0; }
+
+/* ---------- Trending (horizontal cards) ---------- */
+.trending-card{ min-width:260px; margin-right:18px; border-radius:12px; overflow:hidden; background:var(--card); box-shadow:0 12px 25px rgba(2,6,23,0.08); }
+.trending-img{ width:100%; height:150px; object-fit:cover; }
+
+/* ---------- Destinations ---------- */
+.section-title{ font-size:34px; font-weight:700; color:var(--accent); text-align:center; margin-top:36px; margin-bottom:12px; }
+
+/* Destination card */
+.dest-card{ border-radius:12px; overflow:hidden; box-shadow:0 10px 22px rgba(2,6,23,0.08); transition: transform .24s; background:var(--card); }
+.dest-card:hover{ transform: translateY(-8px); }
+.dest-img{ height:190px; width:100%; object-fit:cover; }
+.dest-info{ padding:14px; text-align:center; }
+
+/* ---------- Testimonial carousel ---------- */
+.testimonial-card{ background:var(--card); padding:22px; border-radius:12px; box-shadow:0 10px 30px rgba(2,6,23,0.06); max-width:820px; margin:auto; }
+.testimonial-quote{ font-size:18px; color:var(--muted); margin-bottom:12px; }
+
+/* ---------- Price calendar ---------- */
+.price-calendar{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+.day-box{ width:120px; background:var(--card); padding:12px; border-radius:10px; text-align:center; box-shadow:0 8px 18px rgba(2,6,23,0.06); }
+.day-box .date{ font-weight:700; color:var(--accent); }
+.day-box .price{ margin-top:6px; font-weight:700; color:var(--primary); }
+
+/* ---------- Subscription box ---------- */
+.subscribe-box{ background:linear-gradient(90deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95)); padding:18px; border-radius:12px; box-shadow:0 12px 30px rgba(2,6,23,0.06); max-width:740px; margin:auto; text-align:center; }
+
+/* ---------- Chatbot floating button + modal ---------- */
+.chat-btn{
+  position:fixed; right:22px; bottom:22px; z-index:1500;
+  width:64px; height:64px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 10px 28px rgba(2,6,23,0.25); cursor:pointer;
+}
+.chat-bubble { font-size:20px; }
+
+
+/* small responsiveness */
+@media (max-width:768px){
+  .hero h1{ font-size:32px; }
+  .search-box{ padding:12px; }
+}
+</style>
+
+
+<!-- ================= HERO ================= -->
+<div class="hero" data-aos="fade-in">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Fly to Your Next Adventure</h1>
+    <p>Fast. Affordable. Comfortable — Book your flights in seconds.</p>
+
+    <div class="search-box" data-aos="zoom-in">
+      <form action="/flights" method="GET">
+        <div class="row g-2">
+          <div class="col-md-4 col-12">
+            <input class="form-control" name="source" placeholder="Source city (e.g. Delhi)">
+          </div>
+          <div class="col-md-4 col-12">
+            <input class="form-control" name="destination" placeholder="Destination city (e.g. Dubai)">
+          </div>
+          <div class="col-md-2 col-6">
+            <input class="form-control" type="date" name="date">
+          </div>
+          <div class="col-md-2 col-6">
+            <button class="btn btn-primary w-100 h-100">Search Flights</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="mt-3">
+      <a href="/flights" class="btn btn-light"> Browse All Flights </a>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     WHY CHOOSE US
+========================================================== -->
+<h2 class="section-title">Why Choose Our Airline?</h2>
+
+<div class="features">
+    <div class="feature-card">
+        <h4>✈ 40+ Routes</h4>
+        <p>Fly across major domestic & international destinations.</p>
+    </div>
+
+    <div class="feature-card">
+        <h4>⭐ 4.7 Rated</h4>
+        <p>Top customer satisfaction with reliable service.</p>
+    </div>
+
+    <div class="feature-card">
+        <h4>💺 Easy Booking</h4>
+        <p>Quick and simple reservation process.</p>
+    </div>
+
+    <div class="feature-card">
+        <h4>💳 Secure Payments</h4>
+        <p>100% safe & verified transactions.</p>
+    </div>
+</div>
+
+
+<!-- ================= LOGO STRIP ================ -->
+<!-- Smooth Scrolling Airline Logos -->
+<div class="logo-strip-fixed">
+  <div class="logo-track">
+
+    <img src="{{ url_for('static', filename='logos/emirates.png') }}" alt="Emirates">
+    <img src="{{ url_for('static', filename='logos/qatar.png') }}" alt="Qatar">
+    <img src="{{ url_for('static', filename='logos/airindia.png') }}" alt="Air India">
+    <img src="{{ url_for('static', filename='logos/indigo.png') }}" alt="IndiGo">
+    <img src="{{ url_for('static', filename='logos/vistara.png') }}" alt="Vistara">
+    <img src="{{ url_for('static', filename='logos/airasia.png') }}" alt="AirAsia">
+
+    <!-- Duplicate for infinite scrolling -->
+    <img src="{{ url_for('static', filename='logos/emirates.png') }}" alt="Emirates">
+    <img src="{{ url_for('static', filename='logos/qatar.png') }}" alt="Qatar">
+    <img src="{{ url_for('static', filename='logos/airindia.png') }}" alt="Air India">
+    <img src="{{ url_for('static', filename='logos/indigo.png') }}" alt="IndiGo">
+    <img src="{{ url_for('static', filename='logos/vistara.png') }}" alt="Vistara">
+    <img src="{{ url_for('static', filename='logos/airasia.png') }}" alt="AirAsia">
+
+  </div>
+</div>
+
+
+
+<!-- ================= STATS ================ -->
+<div class="container mt-4">
+  <div class="row g-3 text-center">
+    <div class="col-md-3 col-6" data-aos="zoom-in">
+      <div class="stats-box">
+        <h2 id="stat1">0</h2><p>Flights Available</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6" data-aos="zoom-in">
+      <div class="stats-box">
+        <h2 id="stat2">0</h2><p>Destinations</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6" data-aos="zoom-in">
+      <div class="stats-box">
+        <h2 id="stat3">0</h2><p>Daily Bookings</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6" data-aos="zoom-in">
+      <div class="stats-box">
+        <h2 id="stat4">0</h2><p>Global Users</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TRENDING ROUTES ================ -->
+<h2 class="section-title mt-5" data-aos="fade-up">Trending Routes</h2>
+<div class="container" data-aos="fade-up">
+  <div class="d-flex overflow-auto py-3">
+    <div class="trending-card me-3">
+      <img class="trending-img" src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad" alt="">
+      <div class="p-3 text-center"><b>Dubai ↔ Mumbai</b><br>From ₹21,500</div>
+    </div>
+    <div class="trending-card me-3">
+      <img class="trending-img" src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34" alt="">
+      <div class="p-3 text-center"><b>London ↔ Delhi</b><br>From ₹38,900</div>
+    </div>
+    <div class="trending-card me-3">
+      <img class="trending-img" src="https://images.unsplash.com/photo-1542114740389-9b46fb1e5be7?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+      <div class="p-3 text-center"><b>Singapore ↔ Chennai</b><br>From ₹18,999</div>
+    </div>
+    <div class="trending-card me-3">
+      <img class="trending-img" src="https://plus.unsplash.com/premium_photo-1661914240950-b0124f20a5c1?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="">
+      <div class="p-3 text-center"><b>Tokyo ↔ Delhi</b><br>From ₹43,100</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= POPULAR DESTINATIONS ================ -->
+<h2 class="section-title" data-aos="fade-up">Popular Destinations</h2>
+<div class="container mt-3">
+  <div class="row g-4">
+    <div class="col-md-4" data-aos="fade-up">
+      <div class="dest-card">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad">
+        <div class="dest-info">
+          <div class="dest-name">Dubai</div><div class="dest-price">Starting @ ₹25,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="80">
+      <div class="dest-card">
+        <img class="dest-img" src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34">
+        <div class="dest-info">
+          <div class="dest-name">London</div><div class="dest-price">Starting @ ₹40,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="160">
+      <div class="dest-card">
+        <img class="dest-img" src="https://images.unsplash.com/flagged/photo-1562503542-2a1e6f03b16b?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+        <div class="dest-info">
+          <div class="dest-name">Singapore</div><div class="dest-price">Starting @ ₹18,500</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PRICE CALENDAR (mini) ================ -->
+<h2 class="section-title mt-5" data-aos="fade-up">Price Calendar — Next 10 Days</h2>
+<div class="container mb-4" data-aos="fade-up">
+  <div class="price-calendar" id="priceCalendar">
+    <!-- JS will populate day boxes here -->
+  </div>
+  <p class="text-center mt-3" style="color:var(--muted)">Click a day to auto-fill the search date above.</p>
+</div>
+
+<!-- ================= TESTIMONIALS ================ -->
+<h2 class="section-title mt-4" data-aos="fade-up">What Our Travelers Say</h2>
+<div class="container mb-4" data-aos="fade-up">
+  <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <div class="testimonial-card p-4 mx-auto">
+          <div class="testimonial-quote">"Booked a last-minute flight and the whole process was smooth and fast. Seats were clean, service excellent."</div>
+          <div class="fw-bold">— Aarti R., Mumbai</div>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="testimonial-card p-4 mx-auto">
+          <div class="testimonial-quote">"Great fares and easy refund process. The seat selection UI is superb."</div>
+          <div class="fw-bold">— John K., London</div>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="testimonial-card p-4 mx-auto">
+          <div class="testimonial-quote">"Perfect for family trips. The boarding pass PDF was flawless."</div>
+          <div class="fw-bold">— Meera T., Chennai</div>
+        </div>
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+</div>
+
+<!-- ================= SUBSCRIPTION BOX ================ -->
+<div class="container mb-5" data-aos="fade-up">
+  <div class="subscribe-box">
+    <h4>Get the Best Fares — Weekly Deals</h4>
+    <p class="mb-3" style="color:var(--muted)">Be the first to know about flash sales and discounts.</p>
+
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <form id="subscribeForm" onsubmit="return handleSubscribe(event)">
+          <div class="input-group">
+            <input id="subEmail" class="form-control" type="email" placeholder="Your email address" required>
+            <button class="btn btn-primary" type="submit">Subscribe</button>
+          </div>
+        </form>
+        <div id="subMsg" style="display:none; margin-top:10px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FLOATING CHATBOT BUTTON ================ -->
+<div class="chat-btn" id="chatBtn" aria-label="Open chat">
+  <span class="chat-bubble">💬</span>
+</div>
+
+<!-- Chat Modal (simple client-side mock) -->
+<div class="modal fade" id="chatModal" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Need help? Chat with us</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="chatHistory" style="height:220px; overflow:auto; border:1px solid #eee; padding:8px; border-radius:8px; margin-bottom:10px; background:var(--card)">
+          <div class="text-muted">Agent is offline — this is a demo chat. Leave a message and we'll email back.</div>
+        </div>
+
+        <form id="chatForm" onsubmit="return handleChat(event)">
+          <input id="chatName" class="form-control mb-2" placeholder="Your name (optional)">
+          <input id="chatEmail" class="form-control mb-2" placeholder="Your email">
+          <textarea id="chatMessage" class="form-control mb-2" placeholder="Message" rows="3" required></textarea>
+          <div class="d-grid">
+            <button class="btn btn-primary">Send Message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FOOTER ================ -->
+<div class="footer mt-5">
+  <div class="container text-center">
+    <h5>Airlines Reservation System</h5>
+    <p>Book flights quickly, safely, and reliably.</p>
+    <div class="mt-3">
+      <a href="/">Home</a> |
+      <a href="/flights">Flights</a> |
+      <a href="/my_bookings">My Bookings</a>
+    </div>
+    <p class="mt-3">© 2025 Airlines Reservation. All Rights Reserved.</p>
+  </div>
+</div>
+
+<!-- AOS + small scripts -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+AOS.init({ once:true });
+
+/* ---------- Dark-mode toggle (persistent) ---------- */
+const dmCheckbox = document.getElementById('dmCheckbox');
+const dmLabel = document.getElementById('dmLabel');
+function applyDark(val){
+  if(val){
+    document.body.classList.add('dark');
+    dmCheckbox.checked = true;
+    dmLabel.textContent = 'Dark';
+  } else {
+    document.body.classList.remove('dark');
+    dmCheckbox.checked = false;
+    dmLabel.textContent = 'Light';
+  }
+}
+const saved = localStorage.getItem('site-dark');
+applyDark(saved === '1');
+dmCheckbox.addEventListener('change', ()=> {
+  const on = dmCheckbox.checked;
+  applyDark(on);
+  localStorage.setItem('site-dark', on ? '1':'0');
+});
+
+/* ---------- Counters (small animate) ---------- */
+function animateValue(id, start, end, duration) {
+  let obj = document.getElementById(id);
+  if(!obj) return;
+  let range = end - start;
+  let stepTime = Math.abs(Math.floor(duration / (range || 1)));
+  let current = start;
+  let timer = setInterval(function () {
+    current++;
+    obj.innerHTML = current.toLocaleString();
+    if (current >= end) clearInterval(timer);
+  }, stepTime);
+}
+animateValue("stat1", 0, 40, 1200);   // flights
+animateValue("stat2", 0, 28, 1200);   // destinations
+animateValue("stat3", 0, 142, 1200);  // bookings
+animateValue("stat4", 0, 12000, 1200); // users
+
+/* ---------- Price calendar generation (10 days) ---------- */
+function formatDate(d){ return d.toISOString().slice(0,10); }
+function dayName(d){ return d.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' }); }
+
+function randomPrice(baseMin, baseMax){
+  return Math.floor(Math.random()*(baseMax-baseMin+1)) + baseMin;
+}
+
+function populatePriceCalendar(){
+  const container = document.getElementById('priceCalendar');
+  container.innerHTML = '';
+  const today = new Date();
+  for(let i=0;i<10;i++){
+    const d = new Date(today); d.setDate(today.getDate() + i);
+    const price = randomPrice(7000 + i*100, 25000 + i*500);
+    const box = document.createElement('div');
+    box.className = 'day-box';
+    box.innerHTML = `<div class="date">${dayName(d)}</div>
+                     <div class="price">₹ ${price.toLocaleString()}</div>
+                     <div style="font-size:12px;color:var(--muted);margin-top:6px;">Click to search</div>`;
+    box.style.cursor='pointer';
+    box.onclick = ()=> {
+      // populate date in hero search box
+      const dateInput = document.querySelector('.search-box input[type="date"]');
+      if(dateInput) dateInput.value = formatDate(d);
+      // optionally pre-fill destination/source or show quick CTA
+      dateInput.focus();
+      // small visual feedback
+      box.style.transform='scale(0.98)';
+      setTimeout(()=>box.style.transform='',150);
+    };
+    container.appendChild(box);
+  }
+}
+populatePriceCalendar();
+
+/* ---------- Subscribe form (client side feedback) ---------- */
+function handleSubscribe(e){
+  e.preventDefault();
+  const email = document.getElementById('subEmail').value.trim();
+  const msgEl = document.getElementById('subMsg');
+  if(!email) return;
+  // TODO: POST to server route '/subscribe' if you want to store -> use fetch()
+  msgEl.style.display='block';
+  msgEl.innerHTML = `<div class="alert alert-success">Thanks! <strong>${email}</strong> has been added to our newsletter.</div>`;
+  document.getElementById('subscribeForm').reset();
+  setTimeout(()=> msgEl.style.display='none', 4000);
+  return false;
+}
+
+/* ---------- Chatbot button & modal (demo) ---------- */
+const chatBtn = document.getElementById('chatBtn');
+chatBtn.addEventListener('click', ()=> {
+  const modalEl = new bootstrap.Modal(document.getElementById('chatModal'));
+  modalEl.show();
+});
+function handleChat(e){
+  e.preventDefault();
+  const name = document.getElementById('chatName').value || 'Guest';
+  const email = document.getElementById('chatEmail').value || '';
+  const msg = document.getElementById('chatMessage').value.trim();
+  if(!msg) return false;
+  // Append to chat history (local demo)
+  const history = document.getElementById('chatHistory');
+  const userLine = document.createElement('div');
+  userLine.innerHTML = `<div style="font-weight:600;margin-bottom:4px">${name} <small style="color:var(--muted)">${email}</small></div><div style="background:rgba(0,0,0,0.02); padding:8px; border-radius:6px;">${msg}</div>`;
+  history.appendChild(userLine);
+  history.scrollTop = history.scrollHeight;
+  // Clear and show a canned response
+  document.getElementById('chatMessage').value = '';
+  setTimeout(()=> {
+    const resp = document.createElement('div');
+    resp.innerHTML = `<div style="color:var(--muted); margin-top:8px;"><strong>Support</strong><div style="background:rgba(0,123,255,0.06); padding:8px; border-radius:6px; margin-top:6px;">Thanks — we'll reply by email soon.</div></div>`;
+    history.appendChild(resp);
+    history.scrollTop = history.scrollHeight;
+  }, 700);
+  // TODO: POST message to '/contact' endpoint if you want to store
+  return false;
+}
+
+/* ---------- Optional: restore AOS when DOM changes ---------- */
+document.addEventListener('DOMContentLoaded', ()=>AOS.refresh());
+</script>
+
+{% endblock %}

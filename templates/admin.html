@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Admin - Manage Flights</h2>
+
+<a href="{{ url_for('app_views.add_flight') }}" class="btn btn-primary mb-3">Add New Flight</a>
+
+{% if flights %}
+<table class="table table-bordered table-striped text-center">
+  <thead>
+    <tr>
+      <th>Flight No</th>
+      <th>Source</th>
+      <th>Destination</th>
+      <th>Date</th>
+      <th>Departure</th>
+      <th>Arrival</th>
+      <th>Price (₹)</th>
+      <th>Seats</th>
+      <th>Edit</th>
+      <th>Delete</th>
+      <th>Passengers</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for flight in flights %}
+    <tr>
+      <td>{{ flight.flight_no }}</td>
+      <td>{{ flight.source }}</td>
+      <td>{{ flight.destination }}</td>
+      <td>{{ flight.date }}</td>
+      <td>{{ flight.departure_time }}</td>
+      <td>{{ flight.arrival_time }}</td>
+      <td>{{ flight.price }}</td>
+      <td>{{ flight.seats_available }}</td>
+
+      <td><a class="btn btn-warning btn-sm" href="{{ url_for('app_views.edit_flight', flight_id=flight.id) }}">Edit</a></td>
+      <td><a class="btn btn-danger btn-sm" href="{{ url_for('app_views.delete_flight', flight_id=flight.id) }}">Delete</a></td>
+      <td><a class="btn btn-info btn-sm" href="{{ url_for('app_views.passenger_list', flight_id=flight.id) }}">View</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+<p>No flights available.</p>
+{% endif %}
+
+{% endblock %}
