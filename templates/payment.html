@@ -1,31 +1,196 @@
 {% extends 'base.html' %}
 {% block content %}
+{% set step = 3 %}{% include '_steps.html' %}
 
-<h2 class="text-center mb-4">Payment for Flight {{ flight.flight_no }}</h2>
+{% set method = form.get('method', 'Card') %}
 
-<form action="{{ url_for('app_views.verify_payment') }}" method="POST" class="text-center">
+<div class="row g-4 justify-content-center">
+  <!-- Payment form -->
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h4 class="mb-3">Payment</h4>
 
-    <input type="hidden" name="flight_id" value="{{ flight.id }}">
-    <input type="hidden" name="name" value="{{ name }}">
-    <input type="hidden" name="email" value="{{ email }}">
-    <input type="hidden" name="seat_class" value="{{ seat_class }}">
-    <input type="hidden" name="seat_number" value="{{ seat_number }}">
-    <input type="hidden" name="final_price" value="{{ final_price }}">
+        <form id="payForm" action="{{ url_for('app_views.verify_payment') }}" method="POST" novalidate autocomplete="off">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="flight_id" value="{{ flight.id }}">
+          <input type="hidden" name="seat_number" value="{{ seat_number }}">
+          <input type="hidden" name="method" id="methodField" value="{{ method }}">
 
-    <label>Card Number:</label><br>
-    <input type="text" name="card_no" maxlength="16" required><br><br>
+          <div class="btn-group w-100 method-pick mb-4" role="group" aria-label="Payment method">
+            {% for m in ['Card', 'UPI', 'Net Banking'] %}
+              <button type="button" class="btn btn-outline-primary {% if method == m %}active{% endif %}" data-method="{{ m }}">{{ m }}</button>
+            {% endfor %}
+          </div>
+          {% if errors.method %}<div class="text-danger small mb-2">{{ errors.method }}</div>{% endif %}
 
-    <label>Name on Card:</label><br>
-    <input type="text" name="card_name" required><br><br>
+          <!-- CARD -->
+          <div class="pane" data-pane="Card">
+            <div class="mb-3">
+              <label class="form-label">Card number</label>
+              <div class="card-input-wrap">
+                <input type="text" inputmode="numeric" name="card_no" id="cardNo" maxlength="23" placeholder="1234 5678 9012 3456"
+                       class="form-control {% if errors.card_no %}is-invalid{% endif %}">
+                <span class="card-brand" id="cardBrand"></span>
+              </div>
+              {% if errors.card_no %}<div class="text-danger small">{{ errors.card_no }}</div>{% endif %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Name on card</label>
+              <input type="text" name="card_name" maxlength="60" value="{{ form.get('card_name', '') }}"
+                     class="form-control {% if errors.card_name %}is-invalid{% endif %}">
+              {% if errors.card_name %}<div class="text-danger small">{{ errors.card_name }}</div>{% endif %}
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label">Expiry (MM/YY)</label>
+                <input type="text" inputmode="numeric" name="expiry" id="expiry" maxlength="5" placeholder="MM/YY"
+                       value="{{ form.get('expiry', '') }}" class="form-control {% if errors.expiry %}is-invalid{% endif %}">
+                {% if errors.expiry %}<div class="text-danger small">{{ errors.expiry }}</div>{% endif %}
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">CVV</label>
+                <input type="password" inputmode="numeric" name="cvv" id="cvv" maxlength="4" placeholder="•••"
+                       class="form-control {% if errors.cvv %}is-invalid{% endif %}">
+                {% if errors.cvv %}<div class="text-danger small">{{ errors.cvv }}</div>{% endif %}
+              </div>
+            </div>
+            <div class="text-muted small">Demo gateway: use test card <b>4242 4242 4242 4242</b> (any future expiry, any CVV).
+              Card <b>4000 0000 0000 0002</b> is always declined. Card details are never stored.</div>
+          </div>
 
-    <label>Expiry:</label><br>
-    <input type="month" name="expiry" required><br><br>
+          <!-- UPI -->
+          <div class="pane d-none" data-pane="UPI">
+            <div class="mb-3">
+              <label class="form-label">UPI ID</label>
+              <input type="text" name="upi_id" placeholder="name@upi" value="{{ form.get('upi_id', '') }}"
+                     class="form-control {% if errors.upi_id %}is-invalid{% endif %}">
+              {% if errors.upi_id %}<div class="text-danger small">{{ errors.upi_id }}</div>{% endif %}
+            </div>
+            <div class="text-muted small">You'll confirm the payment with an OTP on the next step.</div>
+          </div>
 
-    <label>CVV:</label><br>
-    <input type="password" name="cvv" maxlength="3" required><br><br>
+          <!-- NET BANKING -->
+          <div class="pane d-none" data-pane="Net Banking">
+            <div class="mb-3">
+              <label class="form-label">Select your bank</label>
+              <select name="bank" class="form-select {% if errors.bank %}is-invalid{% endif %}">
+                <option value="">Choose a bank…</option>
+                {% for b in banks %}<option value="{{ b }}" {% if form.get('bank') == b %}selected{% endif %}>{{ b }}</option>{% endfor %}
+              </select>
+              {% if errors.bank %}<div class="text-danger small">{{ errors.bank }}</div>{% endif %}
+            </div>
+          </div>
 
-    <button type="submit" class="btn btn-primary">Pay ₹{{ final_price }}</button>
+          <!-- PROMO -->
+          <hr>
+          <label class="form-label">Promo code <span class="text-muted small">(optional)</span></label>
+          <div class="input-group">
+            <input type="text" name="promo" id="promo" class="form-control text-uppercase {% if errors.promo %}is-invalid{% endif %}"
+                   placeholder="e.g. WELCOME10" value="{{ form.get('promo', '') }}">
+            <button type="button" class="btn btn-outline-secondary" id="applyPromo">Apply</button>
+          </div>
+          <div id="promoMsg" class="small mt-1 {% if errors.promo %}text-danger{% endif %}">{{ errors.promo or '' }}</div>
+          <div class="text-muted small">Try {% for code, p in promos.items() %}<b>{{ code }}</b> ({{ p.desc }}){% if not loop.last %}; {% endif %}{% endfor %}.</div>
 
-</form>
+          <button type="submit" class="btn btn-primary w-100 mt-4" id="payBtn">Pay ₹<span id="payAmount">{{ q.total|inr }}</span></button>
+        </form>
+      </div>
+    </div>
+  </div>
 
+  <!-- Order summary -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h6 class="mb-3">Order summary</h6>
+        <div class="fw-semibold">{{ flight.source }} → {{ flight.destination }}</div>
+        <div class="text-muted small mb-3">{{ flight.airline }} · {{ flight.flight_no }} · {{ flight.date }} · {{ flight.departure_time }}</div>
+        <div class="small mb-3">Seat <b>{{ seat_number }}</b> · {{ seat_class }}<br>Passenger: {{ user.name }}</div>
+        <div class="price-row"><span>Fare</span><span>₹<span id="sFare">{{ q.fare|inr }}</span></span></div>
+        <div class="price-row text-success"><span>Discount</span><span>−₹<span id="sDisc">{{ q.discount|inr }}</span></span></div>
+        <div class="price-row"><span>GST (5%)</span><span>₹<span id="sTax">{{ q.tax|inr }}</span></span></div>
+        <div class="price-row total"><span>Total</span><span>₹<span id="sTotal">{{ q.total|inr }}</span></span></div>
+        <a class="small d-block mt-3" href="{{ url_for('app_views.select_seat', flight_id=flight.id) }}">← Change seat</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const panes = document.querySelectorAll('.pane');
+  const buttons = document.querySelectorAll('[data-method]');
+  const field = document.getElementById('methodField');
+
+  function show(method) {
+    field.value = method;
+    panes.forEach(p => p.classList.toggle('d-none', p.dataset.pane !== method));
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.method === method));
+  }
+  buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.method)));
+  show(field.value || 'Card');
+
+  // Card formatting
+  const cardNo = document.getElementById('cardNo');
+  const brand = document.getElementById('cardBrand');
+  const cvv = document.getElementById('cvv');
+  function detect(n) {
+    if (/^4/.test(n)) return 'Visa';
+    if (/^(5[1-5]|2[2-7])/.test(n)) return 'Mastercard';
+    if (/^3[47]/.test(n)) return 'Amex';
+    if (/^(60|65|81|82|508)/.test(n)) return 'RuPay';
+    return '';
+  }
+  cardNo.addEventListener('input', () => {
+    const digits = cardNo.value.replace(/\D/g, '').slice(0, 19);
+    cardNo.value = digits.replace(/(.{4})/g, '$1 ').trim();
+    const b = detect(digits);
+    brand.textContent = b;
+    cvv.maxLength = b === 'Amex' ? 4 : 3;
+  });
+  const expiry = document.getElementById('expiry');
+  expiry.addEventListener('input', (e) => {
+    let v = expiry.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+    expiry.value = v;
+  });
+  cvv.addEventListener('input', () => { cvv.value = cvv.value.replace(/\D/g, ''); });
+
+  // Promo (server computes the real price; this only previews it)
+  const fmt = n => Number(n).toLocaleString('en-IN');
+  const msg = document.getElementById('promoMsg');
+  document.getElementById('applyPromo').addEventListener('click', async () => {
+    const body = new FormData();
+    body.append('flight_id', '{{ flight.id }}');
+    body.append('seat_number', '{{ seat_number }}');
+    body.append('promo', document.getElementById('promo').value);
+    try {
+      const res = await fetch('{{ url_for("app_views.apply_promo") }}', {
+        method: 'POST', body,
+        headers: {'X-CSRFToken': document.querySelector('meta[name=csrf-token]').content}
+      });
+      const d = await res.json();
+      msg.textContent = d.message || '';
+      msg.className = 'small mt-1 ' + (d.ok ? 'text-success' : 'text-danger');
+      if (d.total !== undefined) {
+        document.getElementById('sFare').textContent = fmt(d.fare);
+        document.getElementById('sDisc').textContent = fmt(d.discount);
+        document.getElementById('sTax').textContent = fmt(d.tax);
+        document.getElementById('sTotal').textContent = fmt(d.total);
+        document.getElementById('payAmount').textContent = fmt(d.total);
+      }
+    } catch (e) {
+      msg.textContent = 'Could not check the code. Try again.';
+      msg.className = 'small mt-1 text-danger';
+    }
+  });
+
+  // Prevent double submits
+  document.getElementById('payForm').addEventListener('submit', () => {
+    const btn = document.getElementById('payBtn');
+    setTimeout(() => { btn.disabled = true; btn.textContent = 'Processing…'; }, 0);
+  });
+})();
+</script>
 {% endblock %}

@@ -1,59 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h2 class="text-center mb-4">My Bookings for {{ email }}</h2>
+<h2 class="text-center mb-1">My Bookings</h2>
+<p class="text-center text-muted mb-4">{{ email }}</p>
 
-{% if bookings %}
-<table class="table table-bordered table-striped text-center">
-  <thead>
-    <tr>
-      <th>Flight No</th>
-      <th>Source</th>
-      <th>Destination</th>
-      <th>Date</th>
-      <th>Departure</th>
-      <th>Arrival</th>
-      <th>Class</th>
-      <th>Seat</th>
-      <th>Price (₹)</th>
-      <th>Download</th>
-      <th>Cancel</th>
-    </tr>
-  </thead>
+{% if items %}
+<div class="row g-3 justify-content-center">
+  {% for it in items %}
+  {% set b = it.booking %}{% set f = it.flight %}
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="fs-5 fw-semibold">{{ f.source }} → {{ f.destination }}</div>
+            <div class="text-muted small">{{ f.airline }} · {{ f.flight_no }} · Ref {{ b.reference }}</div>
+          </div>
+          {% if it.departed %}<span class="badge bg-secondary">Departed</span>
+          {% else %}<span class="badge bg-success">{{ b.payment_status or 'Paid' }}</span>{% endif %}
+        </div>
 
-  <tbody>
-    {% for booking, flight in bookings %}
-    <tr>
-      <td>{{ flight.flight_no }}</td>
-      <td>{{ flight.source }}</td>
-      <td>{{ flight.destination }}</td>
-      <td>{{ flight.date }}</td>
-      <td>{{ flight.departure_time }}</td>
-      <td>{{ flight.arrival_time }}</td>
-      <td>{{ booking.seat_class }}</td>
-      <td>{{ booking.seat_number }}</td>
-      <td>{{ booking.final_price }}</td>
+        <div class="row g-2 small my-3">
+          <div class="col-4"><div class="text-muted">Date</div><b>{{ f.date }}</b></div>
+          <div class="col-4"><div class="text-muted">Departure</div><b>{{ f.departure_time }}</b></div>
+          <div class="col-4"><div class="text-muted">Arrival</div><b>{{ f.arrival_time }}</b></div>
+          <div class="col-4"><div class="text-muted">Seat</div><b>{{ b.seat_number }}</b></div>
+          <div class="col-4"><div class="text-muted">Class</div><b>{{ b.seat_class }}</b></div>
+          <div class="col-4"><div class="text-muted">Paid</div><b>₹{{ b.final_price|inr }}</b></div>
+          {% if b.transaction_id %}
+          <div class="col-12 text-muted">Txn {{ b.transaction_id }} · {{ b.payment_method }}{% if b.payment_detail %} ({{ b.payment_detail }}){% endif %}</div>
+          {% endif %}
+        </div>
 
-      <td>
-         <a class="btn btn-sm btn-primary"
-            href="{{ url_for('app_views.download_ticket', booking_id=booking.id) }}">
-            PDF
-         </a>
-      </td>
-
-      <td>
-        <a class="btn btn-danger btn-sm"
-           href="{{ url_for('app_views.cancel_booking', booking_id=booking.id) }}">
-           Cancel
-        </a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+        <div class="d-flex gap-2">
+          <a class="btn btn-primary btn-sm" href="{{ url_for('app_views.download_ticket', booking_id=b.id) }}">Boarding pass (PDF)</a>
+          {% if it.can_cancel %}
+          <form method="POST" action="{{ url_for('app_views.cancel_booking', booking_id=b.id) }}"
+                onsubmit="return confirm('Cancel this booking? You will get a refund of ₹{{ it.refund_amount|inr }} ({{ it.refund_pct }}%).');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-outline-danger btn-sm">Cancel · refund ₹{{ it.refund_amount|inr }}</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<p class="text-center text-muted small mt-4">Refund policy: 100% if cancelled 48h+ before departure, 75% within 24–48h, 50% within 24h. No cancellations after departure.</p>
 
 {% else %}
-<p class="text-center mt-4">No bookings found for this email.</p>
+<div class="text-center mt-4">
+  <p>You have no bookings yet.</p>
+  <a class="btn btn-primary" href="{{ url_for('app_views.flights_page') }}">Browse flights</a>
+</div>
 {% endif %}
 
 {% endblock %}

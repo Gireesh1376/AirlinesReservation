@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
   <title>Airlines Reservation System</title>
 
   <!-- Bootstrap -->
@@ -130,6 +132,37 @@
       margin-bottom: 15px;
     }
 
+
+    /* =====================================================
+       Checkout (steps, summary, payment methods)
+    ======================================================*/
+    .checkout-steps { display:flex; justify-content:center; gap:6px; flex-wrap:wrap; }
+    .cs-step { display:flex; align-items:center; gap:6px; color:#8a94a6; font-size:14px; }
+    .cs-step:not(:last-child)::after { content:""; width:28px; height:2px; background:#cfd6e4; margin-left:6px; }
+    .cs-dot { width:26px; height:26px; border-radius:50%; background:#e3e8f2; color:#55607a;
+              display:inline-flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
+    .cs-step.active { color:#004c99; font-weight:600; }
+    .cs-step.active .cs-dot { background:#004c99; color:#fff; }
+    .cs-step.done .cs-dot { background:#198754; color:#fff; }
+    .cs-step.done::after { background:#198754; }
+    .dark .cs-dot { background:#222c3d; color:#aab7d3; }
+    .dark .cs-step.active { color:#8db8ff; }
+    .dark .cs-step.active .cs-dot { background:#0052cc; color:#fff; }
+    .dark .cs-step.done .cs-dot { background:#198754; color:#fff; }
+    @media (max-width:576px) { .cs-label { display:none; } .cs-step.active .cs-label { display:inline; } }
+
+    .price-row { display:flex; justify-content:space-between; padding:4px 0; }
+    .price-row.total { border-top:1px dashed #b8c2d6; margin-top:6px; padding-top:10px; font-weight:600; font-size:1.15rem; }
+    .method-pick .btn { flex:1; }
+    .card-input-wrap { position:relative; }
+    .card-brand { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:12px; font-weight:600; color:#004c99; }
+    .dark .card-brand { color:#8db8ff; }
+    .otp-input { letter-spacing:12px; font-size:1.8rem; text-align:center; font-weight:600; }
+    .dark .text-muted { color:#9caecb !important; }
+    .dark .form-control, .dark .form-select { background:#1a2230; color:#fff; border-color:#333; }
+    .dark .list-group-item { background:#151c26; color:#e6e6e6; border-color:#2b3646; }
+    .dark .alert-info, .dark .alert-warning { color:#fff !important; }
+
     /* =====================================================
        Smooth Transitions Across All Elements  
     ======================================================*/
@@ -147,8 +180,12 @@
 <nav class="navbar navbar-expand-lg floating" id="mainNavbar">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">✈ Airlines Reservation</a>
+    <button class="navbar-toggler border-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+            aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+    </button>
 
-    <div class="collapse navbar-collapse">
+    <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav ms-auto">
 
         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>

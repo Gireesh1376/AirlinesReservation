@@ -16,7 +16,8 @@
       <th>Arrival</th>
       <th>Seat</th>
       <th>Class</th>
-      <th>Price (₹)</th>
+      <th>Paid (₹)</th>
+      <th>Txn ID</th>
       <th>Ticket</th>
       <th>Cancel</th>
     </tr>
@@ -35,6 +36,7 @@
       <td>{{ booking.seat_number }}</td>
       <td>{{ booking.seat_class }}</td>
       <td>{{ booking.final_price }}</td>
+      <td class="small">{{ booking.transaction_id or "—" }}</td>
  
       <td>
          <a class="btn btn-sm btn-primary"
@@ -46,10 +48,11 @@
 
       <!-- CANCEL BUTTON ADDED HERE -->
       <td>
-        <a class="btn btn-danger btn-sm"
-           href="{{ url_for('app_views.cancel_booking_admin', booking_id=booking.id, flight_id=flight.id) }}">
-           Remove
-        </a>
+        <form method="POST" onsubmit="return confirm('Remove this passenger booking?');"
+              action="{{ url_for('app_views.cancel_booking_admin', booking_id=booking.id, flight_id=flight.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-danger btn-sm">Remove</button>
+        </form>
       </td>
     </tr>
     {% endfor %}

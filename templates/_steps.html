@@ -1,0 +1,10 @@
+{# Checkout progress indicator. Usage: {% set step = 2 %}{% include '_steps.html' %} #}
+<div class="checkout-steps mb-4">
+  {% for label in ['Seat', 'Review', 'Payment', 'OTP', 'Done'] %}
+    {% set n = loop.index %}
+    <div class="cs-step {% if n < step %}done{% elif n == step %}active{% endif %}">
+      <span class="cs-dot">{% if n < step %}✓{% else %}{{ n }}{% endif %}</span>
+      <span class="cs-label">{{ label }}</span>
+    </div>
+  {% endfor %}
+</div>

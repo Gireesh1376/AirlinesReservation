@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% set step = 6 %}{% include '_steps.html' %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <div class="text-center mb-3">
+          <div class="display-4">✅</div>
+          <h3 class="mb-0">Booking confirmed</h3>
+          <div class="text-muted">Booking ref <b>BK{{ '%06d'|format(booking.id) }}</b></div>
+        </div>
+
+        <div class="fs-5 fw-semibold">{{ flight.source }} → {{ flight.destination }}</div>
+        <div class="text-muted small mb-3">{{ flight.airline }} · {{ flight.flight_no }}</div>
+
+        <div class="row g-3 small mb-3">
+          <div class="col-4"><div class="text-muted">Date</div><b>{{ flight.date }}</b></div>
+          <div class="col-4"><div class="text-muted">Departure</div><b>{{ flight.departure_time }}</b></div>
+          <div class="col-4"><div class="text-muted">Arrival</div><b>{{ flight.arrival_time }}</b></div>
+          <div class="col-4"><div class="text-muted">Seat</div><b>{{ booking.seat_number }}</b></div>
+          <div class="col-4"><div class="text-muted">Class</div><b>{{ booking.seat_class }}</b></div>
+          <div class="col-4"><div class="text-muted">Amount paid</div><b>₹{{ booking.final_price|inr }}</b></div>
+          {% if booking.promo_code %}<div class="col-4"><div class="text-muted">Promo</div><b>{{ booking.promo_code }} (−₹{{ booking.discount|inr }})</b></div>{% endif %}
+          {% if booking.transaction_id %}
+          <div class="col-6"><div class="text-muted">Transaction ID</div><b>{{ booking.transaction_id }}</b></div>
+          <div class="col-6"><div class="text-muted">Paid via</div><b>{{ booking.payment_method }}{% if booking.payment_detail %} ({{ booking.payment_detail }}){% endif %}</b></div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex gap-2">
+          <a class="btn btn-primary flex-grow-1" href="{{ url_for('app_views.download_ticket', booking_id=booking.id) }}">Download Boarding Pass (PDF)</a>
+          <a class="btn btn-outline-secondary" href="{{ url_for('app_views.my_bookings') }}">My Bookings</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

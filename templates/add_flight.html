@@ -3,6 +3,7 @@
 <h2>Add New Flight</h2>
 
 <form action="{{ url_for('app_views.add_flight') }}" method="POST" style="text-align:center;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   
   <label>Flight No:</label><br>
   <input type="text" name="flight_no" required><br><br>

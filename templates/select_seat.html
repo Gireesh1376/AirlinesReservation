@@ -1,13 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h2 class="text-center mb-4">Choose Your Seat</h2>
+{% set step = 1 %}{% include '_steps.html' %}
+<h2 class="text-center mb-1">Choose Your Seat</h2>
+<p class="text-center text-muted mb-3">{{ flight.source }} → {{ flight.destination }} · {{ flight.airline }} {{ flight.flight_no }} · {{ flight.date }} {{ flight.departure_time }}</p>
+
+<div class="d-flex justify-content-center flex-wrap gap-3 small mb-4">
+  <span><span class="seat-key" style="background:#0056b3"></span> First Class ₹{{ prices['First Class']|inr }}</span>
+  <span><span class="seat-key" style="background:#c99700"></span> Business ₹{{ prices['Business']|inr }}</span>
+  <span><span class="seat-key" style="background:#28a745"></span> Economy ₹{{ prices['Economy']|inr }}</span>
+  <span><span class="seat-key" style="background:#dc3545"></span> Booked</span>
+</div>
 
 <style>
 .seat {
-    width: 48px;
-    height: 48px;
-    margin: 6px;
+    width: 44px;
+    height: 44px;
+    margin: 4px;
+    position: relative;
     color: white;
     display: inline-flex;
     align-items: center;
@@ -27,7 +37,9 @@
 .seat.business { background-color: #c99700; }   /* Business - Gold */
 .seat.economy { background-color: #28a745; }    /* Economy - Green */
 
-.seat.booked { background-color: #dc3545 !important; cursor: not-allowed; }
+.seat-key { display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:middle; margin-right:4px; }
+.seat.booked { background-color: #dc3545 !important; cursor: not-allowed; opacity: .55; }
+.seat.booked:hover { transform: none; }
 
 /* Tooltips */
 .seat[data-tooltip]:hover:after {

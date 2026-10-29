@@ -5,6 +5,7 @@
 
 <!-- Search Form -->
 <form action="{{ url_for('app_views.flights_page') }}" method="POST" class="row mb-4">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   <div class="col-md-3">
     <label>Source</label>
@@ -38,10 +39,12 @@
 </form>
 
 {% if flights %}
-<table class="table table-bordered table-striped text-center">
+<div class="table-responsive">
+<table class="table table-bordered table-striped text-center align-middle">
   <thead>
     <tr>
       <th>Flight No</th>
+      <th>Airline</th>
       <th>Source</th>
       <th>Destination</th>
       <th>Date</th>
@@ -57,18 +60,20 @@
     {% for flight in flights %}
       <tr>
         <td>{{ flight.flight_no }}</td>
+        <td>{{ flight.airline }}</td>
         <td>{{ flight.source }}</td>
         <td>{{ flight.destination }}</td>
         <td>{{ flight.date }}</td>
         <td>{{ flight.departure_time }}</td>
         <td>{{ flight.arrival_time }}</td>
-        <td>{{ flight.price }}</td>
+        <td>{{ flight.price|inr }}</td>
         <td>{{ flight.seats_available }}</td>
-        <td><a class="btn btn-success" href="{{ url_for('app_views.select_seat', flight_id=flight.id) }}">Book</a></td>
+        <td>{% if flight.seats_available > 0 %}<a class="btn btn-success" href="{{ url_for('app_views.select_seat', flight_id=flight.id) }}">Book</a>{% else %}<span class="badge bg-secondary">Sold out</span>{% endif %}</td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
+</div>
 
 {% else %}
 <p class="text-center">No flights found.</p>

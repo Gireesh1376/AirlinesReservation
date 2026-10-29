@@ -4,6 +4,8 @@
 <h2 class="text-center mb-4">Login</h2>
 
 <form action="{{ url_for('app_views.login') }}" method="POST" class="text-center">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
 
     <label>Email:</label><br>
     <input type="email" name="email" required><br><br>

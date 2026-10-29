@@ -4,6 +4,7 @@
 <h2 class="text-center mb-4">Create Account</h2>
 
 <form action="{{ url_for('app_views.signup') }}" method="POST" class="text-center">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <label>Name:</label><br>
     <input type="text" name="name" required><br><br>
@@ -12,7 +13,7 @@
     <input type="email" name="email" required><br><br>
 
     <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+    <input type="password" name="password" minlength="6" required><br><br>
 
     <button class="btn btn-success">Signup</button>
 

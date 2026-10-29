@@ -1,21 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
+{% set step = 4 %}{% include '_steps.html' %}
 
-<h2 class="text-center mb-4">Enter OTP</h2>
+<div class="row justify-content-center">
+  <div class="col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4 text-center">
+        <h4 class="mb-1">Confirm payment</h4>
+        <p class="text-muted mb-3">Enter the 6-digit OTP to authorise ₹{{ p.total|inr }} via {{ p.method }}{% if p.detail %} ({{ p.detail }}){% endif %}.</p>
 
-<p class="text-center">OTP sent to your bank registered mobile: <b>123456</b></p>
+        {% if demo_otp %}
+        <div class="alert alert-info py-2 small">Demo mode: no SMS is sent. Your OTP is <b>{{ demo_otp }}</b>.</div>
+        {% endif %}
 
-<form action="/finish_payment" method="POST">
-    
-    <input type="hidden" name="flight_id" value="{{ flight_id }}">
-    <input type="hidden" name="seat_class" value="{{ seat_class }}">
-    <input type="hidden" name="seat_number" value="{{ seat_number }}">
-    <input type="hidden" name="final_price" value="{{ final_price }}">
+        <form action="{{ url_for('app_views.finish_payment') }}" method="POST" autocomplete="off">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="text" name="otp" class="form-control otp-input mb-2" inputmode="numeric" maxlength="6"
+                 pattern="\d{6}" placeholder="••••••" required autofocus>
+          <div class="small text-muted mb-3">
+            OTP expires in <b id="timer">--:--</b> · {{ attempts_left }} attempt(s) left
+          </div>
+          <button class="btn btn-primary w-100" id="confirmBtn">Confirm &amp; Pay ₹{{ p.total|inr }}</button>
+        </form>
 
-    <label>Enter OTP</label>
-    <input type="text" name="otp" class="form-control" required>
+        <div class="d-flex justify-content-between mt-3">
+          <form action="{{ url_for('app_views.resend_otp') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-link btn-sm p-0" {% if not can_resend %}disabled{% endif %}>Resend OTP</button>
+          </form>
+          <form action="{{ url_for('app_views.cancel_payment') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-link btn-sm text-danger p-0">Cancel payment</button>
+          </form>
+        </div>
+        <div class="text-muted small mt-3">{{ flight.source }} → {{ flight.destination }} · Seat {{ p.seat }} · Ref {{ p.txn_id }}</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <button class="btn btn-primary mt-3">Confirm Payment</button>
-</form>
-
+<script>
+(function () {
+  let left = {{ seconds_left }};
+  const el = document.getElementById('timer');
+  function tick() {
+    const m = String(Math.floor(left / 60)).padStart(2, '0');
+    const s = String(left % 60).padStart(2, '0');
+    el.textContent = m + ':' + s;
+    if (left <= 0) { el.textContent = 'expired'; el.classList.add('text-danger'); return; }
+    left--; setTimeout(tick, 1000);
+  }
+  tick();
+  document.querySelector('input[name=otp]').addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/\D/g, '');
+  });
+})();
+</script>
 {% endblock %}

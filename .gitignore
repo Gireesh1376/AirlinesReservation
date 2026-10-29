@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+temp_qr.png
+.env
+venv/

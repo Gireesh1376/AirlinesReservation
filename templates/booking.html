@@ -1,37 +1,40 @@
 {% extends 'base.html' %}
 {% block content %}
+{% set step = 2 %}{% include '_steps.html' %}
 
-<h2 class="text-center mb-4">Book Flight {{ flight.flight_no }}</h2>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h4 class="mb-1">Review your booking</h4>
+        <div class="text-muted small mb-3">{{ flight.airline }} · {{ flight.flight_no }}</div>
 
-<form action="{{ url_for('app_views.payment') }}" method="POST" style="text-align:center;">
+        <div class="fs-5 fw-semibold mb-2">{{ flight.source }} → {{ flight.destination }}</div>
+        <div class="row g-3 small mb-4">
+          <div class="col-4"><div class="text-muted">Date</div><b>{{ flight.date }}</b></div>
+          <div class="col-4"><div class="text-muted">Departure</div><b>{{ flight.departure_time }}</b></div>
+          <div class="col-4"><div class="text-muted">Arrival</div><b>{{ flight.arrival_time }}</b></div>
+          <div class="col-4"><div class="text-muted">Seat</div><b>{{ seat_number }}</b></div>
+          <div class="col-4"><div class="text-muted">Class</div><b>{{ seat_class }}</b></div>
+          <div class="col-4"><div class="text-muted">Passenger</div><b>{{ user.name }}</b></div>
+          <div class="col-12"><div class="text-muted">Ticket will be linked to</div><b>{{ user.email }}</b></div>
+        </div>
 
-    <!-- Hidden: Flight ID -->
-    <input type="hidden" name="flight_id" value="{{ flight.id }}">
+        <h6>Fare summary</h6>
+        <div class="price-row"><span>{{ seat_class }} fare</span><span>₹{{ q.fare|inr }}</span></div>
+        <div class="price-row"><span>GST (5%)</span><span>₹{{ q.tax|inr }}</span></div>
+        <div class="price-row total"><span>Total</span><span>₹{{ q.total|inr }}</span></div>
+        <div class="text-muted small mt-1">Have a promo code? You can apply it on the next step.</div>
 
-    <!-- Hidden: Selected Seat -->
-    <input type="hidden" name="seat_number" value="{{ seat_number }}">
-
-    <!-- Hidden: Auto-selected Seat Class -->
-    <input type="hidden" id="auto_class" name="seat_class" value="{{ seat_class }}">
-
-    <!-- Hidden: Final Price -->
-    <input type="hidden" name="final_price" value="{{ final_price }}">
-
-    <h3 class="mt-3">Seat Selected: <b>{{ seat_number }}</b></h3>
-
-    <p class="text-muted">
-        <b>Seat Class:</b> {{ seat_class }} <br>
-        <b>Price:</b> ₹{{ final_price }}
-    </p>
-
-    <br>
-
-    <!-- REMOVE NAME/EMAIL FIELDS - They are handled via session -->
-    <p><b>Passenger:</b> {{ session.user_name }}</p>
-    <p><b>Email:</b> {{ session.user_email }}</p>
-
-
-    <button type="submit" class="btn btn-primary">Proceed to Payment</button>
-</form>
-
+        <form action="{{ url_for('app_views.payment') }}" method="POST" class="d-flex gap-2 mt-4">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="flight_id" value="{{ flight.id }}">
+          <input type="hidden" name="seat_number" value="{{ seat_number }}">
+          <a class="btn btn-outline-secondary" href="{{ url_for('app_views.select_seat', flight_id=flight.id) }}">Change seat</a>
+          <button type="submit" class="btn btn-primary flex-grow-1">Proceed to Payment · ₹{{ q.total|inr }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
